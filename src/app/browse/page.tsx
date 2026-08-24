@@ -1,17 +1,29 @@
-import { getApprovedAssets } from "@/lib/queries";
+"use client";
+
+import { Suspense, useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
+import { getApprovedAssets, type CatalogAsset } from "@/lib/queries";
 import { BrowseGrid } from "@/components/browse-grid";
 
-export default async function BrowsePage({
-  searchParams,
-}: {
-  searchParams: Promise<{ q?: string; free?: string }>;
-}) {
-  const { q, free } = await searchParams;
+function BrowseContent() {
+  const searchParams = useSearchParams();
+  const q = searchParams.get("q") ?? undefined;
+  const free = searchParams.get("free");
+  const [assets, setAssets] = useState<CatalogAsset[]>([]);
 
-  let assets = await getApprovedAssets({ q });
-  if (free) {
-    assets = assets.filter((a) => a.price === 0);
-  }
+  useEffect(() => {
+    getApprovedAssets({ q }).then((result) => {
+      setAssets(free ? result.filter((a) => a.price === 0) : result);
+    });
+  }, [q, free]);
 
   return <BrowseGrid title={q ? `Results for "${q}"` : "All assets"} assets={assets} />;
+}
+
+export default function BrowsePage() {
+  return (
+    <Suspense>
+      <BrowseContent />
+    </Suspense>
+  );
 }

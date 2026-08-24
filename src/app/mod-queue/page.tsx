@@ -1,31 +1,66 @@
-import { redirect } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
+"use client";
+
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { createClient } from "@/lib/supabase/client";
 import { isSupabaseConfigured } from "@/lib/supabase/env";
 import { SetupNotice } from "@/components/setup-notice";
 
-export default async function ModQueuePage() {
+type PendingAsset = {
+  id: string;
+  title: string;
+  category_slug: string;
+  creator_id: string;
+  ai_mod_result: unknown;
+  created_at: string;
+};
+
+export default function ModQueuePage() {
+  const router = useRouter();
+  const [allowed, setAllowed] = useState(false);
+  const [pending, setPending] = useState<PendingAsset[] | null>(null);
+
+  useEffect(() => {
+    if (!isSupabaseConfigured()) return;
+    const supabase = createClient();
+
+    supabase.auth.getUser().then(async ({ data: { user } }) => {
+      if (!user) {
+        router.push("/login");
+        return;
+      }
+
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("role")
+        .eq("id", user.id)
+        .single();
+
+      if (profile?.role !== "mod" && profile?.role !== "admin") {
+        router.push("/dashboard");
+        return;
+      }
+
+      setAllowed(true);
+
+      const { data } = await supabase
+        .from("assets")
+        .select("id, title, category_slug, creator_id, ai_mod_result, created_at")
+        .eq("status", "pending")
+        .order("created_at", { ascending: true });
+
+      setPending(data ?? []);
+    });
+  }, [router]);
+
   if (!isSupabaseConfigured()) return <SetupNotice />;
-
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  if (!user) redirect("/login");
-
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("role")
-    .eq("id", user.id)
-    .single();
-
-  if (profile?.role !== "mod" && profile?.role !== "admin") redirect("/dashboard");
-
-  const { data: pending } = await supabase
-    .from("assets")
-    .select("id, title, category_slug, creator_id, ai_mod_result, created_at")
-    .eq("status", "pending")
-    .order("created_at", { ascending: true });
+  if (!allowed) {
+    return (
+      <div className="mx-auto w-full max-w-4xl px-4 py-24 text-center text-sm text-muted">
+        Loading...
+      </div>
+    );
+  }
 
   return (
     <div className="mx-auto w-full max-w-4xl px-4 py-14 sm:px-6">

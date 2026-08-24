@@ -1,19 +1,53 @@
-import { notFound } from "next/navigation";
+"use client";
+
+import { Suspense, useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import Image from "next/image";
+import Link from "next/link";
 import { Download, Heart, Flag, ShieldCheck } from "lucide-react";
-import { getAssetById, getApprovedAssets } from "@/lib/queries";
+import { getAssetById, getApprovedAssets, type CatalogAsset } from "@/lib/queries";
 import { getCategory } from "@/lib/categories";
 import { AssetCard } from "@/components/asset-card";
 
-export default async function AssetPage({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = await params;
-  const asset = await getAssetById(id);
-  if (!asset) notFound();
+function AssetContent() {
+  const searchParams = useSearchParams();
+  const id = searchParams.get("id");
+  const [asset, setAsset] = useState<CatalogAsset | null | undefined>(undefined);
+  const [related, setRelated] = useState<CatalogAsset[]>([]);
+
+  useEffect(() => {
+    if (!id) return;
+    getAssetById(id).then((result) => {
+      setAsset(result);
+      if (result) {
+        getApprovedAssets({ categorySlug: result.categorySlug, limit: 6 }).then((pool) =>
+          setRelated(pool.filter((a) => a.id !== id).slice(0, 5))
+        );
+      }
+    });
+  }, [id]);
+
+  if (!id || asset === null) {
+    return (
+      <div className="mx-auto w-full max-w-6xl px-4 py-24 text-center">
+        <p className="text-sm text-muted">Asset not found.</p>
+        <Link href="/browse" className="mt-4 inline-block text-sm underline">
+          Back to browse
+        </Link>
+      </div>
+    );
+  }
+
+  if (asset === undefined) {
+    return (
+      <div className="mx-auto w-full max-w-6xl px-4 py-24 text-center text-sm text-muted">
+        Loading...
+      </div>
+    );
+  }
 
   const category = getCategory(asset.categorySlug);
   const image = asset.thumbnailUrl ?? category?.image;
-  const relatedPool = await getApprovedAssets({ categorySlug: asset.categorySlug, limit: 6 });
-  const related = relatedPool.filter((a) => a.id !== id).slice(0, 5);
 
   return (
     <div className="mx-auto w-full max-w-6xl px-4 py-10 sm:px-6">
@@ -91,5 +125,13 @@ export default async function AssetPage({ params }: { params: Promise<{ id: stri
         </div>
       )}
     </div>
+  );
+}
+
+export default function AssetPage() {
+  return (
+    <Suspense>
+      <AssetContent />
+    </Suspense>
   );
 }

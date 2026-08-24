@@ -1,4 +1,4 @@
-import { createClient } from "@/lib/supabase/server";
+import { createClient } from "@/lib/supabase/client";
 import { isSupabaseConfigured } from "@/lib/supabase/env";
 
 export type CatalogAsset = {
@@ -25,10 +25,7 @@ type AssetRow = {
   creator: { username: string | null } | null;
 };
 
-async function toCatalogAsset(
-  row: AssetRow,
-  supabase: Awaited<ReturnType<typeof createClient>>
-): Promise<CatalogAsset> {
+function toCatalogAsset(row: AssetRow, supabase: ReturnType<typeof createClient>): CatalogAsset {
   const thumbnailUrl = row.thumbnail_path
     ? supabase.storage.from("thumbnails").getPublicUrl(row.thumbnail_path).data.publicUrl
     : null;
@@ -47,14 +44,14 @@ async function toCatalogAsset(
 }
 
 const ASSET_COLUMNS =
-  "id, title, description, category_slug, price, download_count, like_count, thumbnail_path, creator:profiles(username)";
+  "id, title, description, category_slug, price, download_count, like_count, thumbnail_path, creator:profiles!assets_creator_id_fkey(username)";
 
 export async function getApprovedAssets(
   opts: { categorySlug?: string; q?: string; limit?: number } = {}
 ): Promise<CatalogAsset[]> {
   if (!isSupabaseConfigured()) return [];
 
-  const supabase = await createClient();
+  const supabase = createClient();
   let query = supabase
     .from("assets")
     .select(ASSET_COLUMNS)
@@ -68,13 +65,13 @@ export async function getApprovedAssets(
   const { data, error } = await query.returns<AssetRow[]>();
   if (error || !data) return [];
 
-  return Promise.all(data.map((row) => toCatalogAsset(row, supabase)));
+  return data.map((row) => toCatalogAsset(row, supabase));
 }
 
 export async function getAssetById(id: string): Promise<CatalogAsset | null> {
   if (!isSupabaseConfigured()) return null;
 
-  const supabase = await createClient();
+  const supabase = createClient();
   const { data, error } = await supabase
     .from("assets")
     .select(ASSET_COLUMNS)
@@ -90,7 +87,7 @@ export async function getAssetById(id: string): Promise<CatalogAsset | null> {
 export async function getCatalogStats() {
   if (!isSupabaseConfigured()) return { assetCount: 0, totalDownloads: 0 };
 
-  const supabase = await createClient();
+  const supabase = createClient();
   const [{ count }, { data }] = await Promise.all([
     supabase.from("assets").select("id", { count: "exact", head: true }).eq("status", "approved"),
     supabase.from("assets").select("download_count").eq("status", "approved"),

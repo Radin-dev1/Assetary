@@ -1,8 +1,11 @@
+"use client";
+
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { ArrowRight, ShieldCheck, Users, Sparkles, Compass } from "lucide-react";
 import { categories } from "@/lib/categories";
-import { getApprovedAssets, getCatalogStats } from "@/lib/queries";
+import { getApprovedAssets, getCatalogStats, type CatalogAsset } from "@/lib/queries";
 import { CategoryTile } from "@/components/category-tile";
 import { AssetCard } from "@/components/asset-card";
 import { EmptyCatalog } from "@/components/empty-catalog";
@@ -25,11 +28,14 @@ const trust = [
   },
 ];
 
-export default async function Home() {
-  const [assets, catalogStats] = await Promise.all([
-    getApprovedAssets({ limit: 20 }),
-    getCatalogStats(),
-  ]);
+export default function Home() {
+  const [assets, setAssets] = useState<CatalogAsset[]>([]);
+  const [catalogStats, setCatalogStats] = useState({ assetCount: 0, totalDownloads: 0 });
+
+  useEffect(() => {
+    getApprovedAssets({ limit: 20 }).then(setAssets);
+    getCatalogStats().then(setCatalogStats);
+  }, []);
 
   const stats = [
     { label: "Assets live", value: `${catalogStats.assetCount}` },
