@@ -1,7 +1,6 @@
 import type { Asset } from "./types";
 import { categories } from "./categories";
 
-const swatches = ["#1c2128", "#20242b", "#181b20", "#23272e", "#1a1e24"];
 const names = [
   "Cinematic Studio Rig",
   "Golden Hour HDRI Pack",
@@ -33,7 +32,6 @@ export const mockAssets: Asset[] = Array.from({ length: 40 }).map((_, i) => {
     title: names[i % names.length],
     categorySlug: category.slug,
     creator: creators[i % creators.length],
-    thumbnailColor: swatches[i % swatches.length],
     price: r1 > 0.72 ? Math.round(r1 * 20) : 0,
     downloads: Math.floor(r2 * 5000),
     likes: Math.floor(r3 * 400),

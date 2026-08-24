@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import Image from "next/image";
 import { Download, Heart, Flag, ShieldCheck } from "lucide-react";
 import { getAsset, mockAssets } from "@/lib/mock-assets";
 import { getCategory } from "@/lib/categories";
@@ -20,20 +21,20 @@ export default async function AssetPage({ params }: { params: Promise<{ id: stri
     <div className="mx-auto w-full max-w-6xl px-4 py-10 sm:px-6">
       <div className="grid gap-10 lg:grid-cols-[1.4fr_1fr]">
         <div>
-          <div
-            className="flex aspect-video items-center justify-center rounded-xl border border-border text-6xl"
-            style={{ backgroundColor: asset.thumbnailColor }}
-          >
-            <span className="opacity-40">{category?.emoji}</span>
+          <div className="relative aspect-video overflow-hidden rounded-xl border border-border bg-surface-2">
+            {category && (
+              <Image src={category.image} alt={category.name} fill sizes="60vw" className="object-cover" />
+            )}
           </div>
           <div className="mt-4 grid grid-cols-4 gap-3">
             {Array.from({ length: 4 }).map((_, i) => (
               <div
                 key={i}
-                className="flex aspect-video items-center justify-center rounded-lg border border-border text-xl opacity-70"
-                style={{ backgroundColor: asset.thumbnailColor }}
+                className="relative aspect-video overflow-hidden rounded-lg border border-border bg-surface-2 opacity-80"
               >
-                <span className="opacity-40">{category?.emoji}</span>
+                {category && (
+                  <Image src={category.image} alt="" fill sizes="15vw" className="object-cover" />
+                )}
               </div>
             ))}
           </div>
