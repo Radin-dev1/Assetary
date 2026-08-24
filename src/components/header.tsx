@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Logo } from "./logo";
-import { Search, Upload, User } from "lucide-react";
+import { Search, Upload } from "lucide-react";
 
 export function Header() {
   return (
@@ -16,6 +16,9 @@ export function Header() {
           </Link>
           <Link href="/browse?free=1" className="transition-colors hover:text-foreground">
             Free
+          </Link>
+          <Link href="/discover" className="transition-colors hover:text-foreground">
+            Discover
           </Link>
           <Link href="/about" className="transition-colors hover:text-foreground">
             About
@@ -35,20 +38,19 @@ export function Header() {
           />
         </form>
 
-        <div className="ml-auto flex items-center gap-2 sm:ml-0">
+        <div className="ml-auto flex items-center gap-4 sm:ml-0">
           <Link
             href="/upload"
-            className="hidden items-center gap-1.5 rounded-full border border-border px-3.5 py-2 text-sm transition-colors hover:border-foreground/40 sm:flex"
+            className="hidden items-center gap-1.5 text-sm text-muted transition-colors hover:text-foreground sm:flex"
           >
             <Upload className="h-4 w-4" strokeWidth={1.75} />
             Upload
           </Link>
           <Link
             href="/login"
-            className="flex items-center gap-1.5 rounded-full bg-foreground px-3.5 py-2 text-sm font-medium text-background transition-opacity hover:opacity-85"
+            className="rounded-full bg-foreground px-4 py-2 text-sm font-medium text-background transition-opacity hover:opacity-85"
           >
-            <User className="h-4 w-4" strokeWidth={2} />
-            <span className="hidden sm:inline">Sign in</span>
+            Log in
           </Link>
         </div>
       </div>

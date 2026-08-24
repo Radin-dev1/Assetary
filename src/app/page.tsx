@@ -1,6 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
-import { ArrowRight, ShieldCheck, Users, Sparkles } from "lucide-react";
+import { ArrowRight, ShieldCheck, Users, Sparkles, Compass } from "lucide-react";
 import { categories } from "@/lib/categories";
 import { mockAssets } from "@/lib/mock-assets";
 import { CategoryTile } from "@/components/category-tile";
@@ -123,6 +123,28 @@ export default function Home() {
           {mockAssets.slice(0, 20).map((asset) => (
             <AssetCard key={asset.id} asset={asset} />
           ))}
+        </div>
+      </section>
+
+      <section className="border-t border-border">
+        <div className="mx-auto flex max-w-7xl flex-col items-start gap-4 px-4 py-14 sm:flex-row sm:items-center sm:justify-between sm:px-6">
+          <div className="flex items-start gap-3">
+            <Compass className="mt-0.5 h-5 w-5 text-muted" strokeWidth={1.5} />
+            <div>
+              <p className="font-medium">Can&apos;t find it here yet?</p>
+              <p className="mt-1 text-sm text-muted">
+                We point you to other good, free places for GFX resources — clearly labeled, never
+                copied onto Assetary.
+              </p>
+            </div>
+          </div>
+          <Link
+            href="/discover"
+            className="flex shrink-0 items-center gap-1.5 rounded-full border border-border px-4 py-2 text-sm font-medium transition-colors hover:border-foreground/40"
+          >
+            Discover
+            <ArrowRight className="h-3.5 w-3.5" strokeWidth={2} />
+          </Link>
         </div>
       </section>
     </div>
