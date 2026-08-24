@@ -4,6 +4,8 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { UploadCloud } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
+import { isSupabaseConfigured } from "@/lib/supabase/env";
+import { SetupNotice } from "@/components/setup-notice";
 import { categories } from "@/lib/categories";
 
 export default function UploadPage() {
@@ -71,6 +73,8 @@ export default function UploadPage() {
 
     router.push("/dashboard");
   }
+
+  if (!isSupabaseConfigured()) return <SetupNotice />;
 
   return (
     <div className="mx-auto w-full max-w-xl px-4 py-14 sm:px-6">

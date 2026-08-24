@@ -1,4 +1,4 @@
-import { mockAssets } from "@/lib/mock-assets";
+import { getApprovedAssets } from "@/lib/queries";
 import { BrowseGrid } from "@/components/browse-grid";
 
 export default async function BrowsePage({
@@ -8,11 +8,7 @@ export default async function BrowsePage({
 }) {
   const { q, free } = await searchParams;
 
-  let assets = mockAssets;
-  if (q) {
-    const query = q.toLowerCase();
-    assets = assets.filter((a) => a.title.toLowerCase().includes(query));
-  }
+  let assets = await getApprovedAssets({ q });
   if (free) {
     assets = assets.filter((a) => a.price === 0);
   }

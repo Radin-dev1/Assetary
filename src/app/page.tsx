@@ -2,19 +2,10 @@ import Link from "next/link";
 import Image from "next/image";
 import { ArrowRight, ShieldCheck, Users, Sparkles, Compass } from "lucide-react";
 import { categories } from "@/lib/categories";
-import { mockAssets } from "@/lib/mock-assets";
+import { getApprovedAssets, getCatalogStats } from "@/lib/queries";
 import { CategoryTile } from "@/components/category-tile";
 import { AssetCard } from "@/components/asset-card";
-
-const stats = [
-  { label: "Assets live", value: `${mockAssets.length}+` },
-  {
-    label: "Total downloads",
-    value: `${Math.round(mockAssets.reduce((sum, a) => sum + a.downloads, 0) / 1000)}K+`,
-  },
-  { label: "Categories", value: `${categories.length}` },
-  { label: "Cost to browse", value: "Free" },
-];
+import { EmptyCatalog } from "@/components/empty-catalog";
 
 const trust = [
   {
@@ -34,7 +25,19 @@ const trust = [
   },
 ];
 
-export default function Home() {
+export default async function Home() {
+  const [assets, catalogStats] = await Promise.all([
+    getApprovedAssets({ limit: 20 }),
+    getCatalogStats(),
+  ]);
+
+  const stats = [
+    { label: "Assets live", value: `${catalogStats.assetCount}` },
+    { label: "Total downloads", value: `${catalogStats.totalDownloads}` },
+    { label: "Categories", value: `${categories.length}` },
+    { label: "Cost to browse", value: "Free" },
+  ];
+
   return (
     <div className="flex flex-1 flex-col">
       <section className="relative overflow-hidden border-b border-border">
@@ -120,9 +123,11 @@ export default function Home() {
           </Link>
         </div>
         <div className="mt-5 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
-          {mockAssets.slice(0, 20).map((asset) => (
-            <AssetCard key={asset.id} asset={asset} />
-          ))}
+          {assets.length > 0 ? (
+            assets.map((asset) => <AssetCard key={asset.id} asset={asset} />)
+          ) : (
+            <EmptyCatalog message="Nothing's been uploaded yet — be the first." />
+          )}
         </div>
       </section>
 

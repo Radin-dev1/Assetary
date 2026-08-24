@@ -1,51 +1,38 @@
 import { notFound } from "next/navigation";
 import Image from "next/image";
 import { Download, Heart, Flag, ShieldCheck } from "lucide-react";
-import { getAsset, mockAssets } from "@/lib/mock-assets";
+import { getAssetById, getApprovedAssets } from "@/lib/queries";
 import { getCategory } from "@/lib/categories";
 import { AssetCard } from "@/components/asset-card";
 
-export function generateStaticParams() {
-  return mockAssets.map((a) => ({ id: a.id }));
-}
-
 export default async function AssetPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const asset = getAsset(id);
+  const asset = await getAssetById(id);
   if (!asset) notFound();
 
   const category = getCategory(asset.categorySlug);
-  const related = mockAssets.filter((a) => a.categorySlug === asset.categorySlug && a.id !== id).slice(0, 5);
+  const image = asset.thumbnailUrl ?? category?.image;
+  const relatedPool = await getApprovedAssets({ categorySlug: asset.categorySlug, limit: 6 });
+  const related = relatedPool.filter((a) => a.id !== id).slice(0, 5);
 
   return (
     <div className="mx-auto w-full max-w-6xl px-4 py-10 sm:px-6">
       <div className="grid gap-10 lg:grid-cols-[1.4fr_1fr]">
         <div>
           <div className="relative aspect-video overflow-hidden rounded-xl border border-border bg-surface-2">
-            {category && (
-              <Image src={category.image} alt={category.name} fill sizes="60vw" className="object-cover" />
+            {image && (
+              <Image src={image} alt={asset.title} fill sizes="60vw" className="object-cover" />
             )}
           </div>
-          <div className="mt-4 grid grid-cols-4 gap-3">
-            {Array.from({ length: 4 }).map((_, i) => (
-              <div
-                key={i}
-                className="relative aspect-video overflow-hidden rounded-lg border border-border bg-surface-2 opacity-80"
-              >
-                {category && (
-                  <Image src={category.image} alt="" fill sizes="15vw" className="object-cover" />
-                )}
-              </div>
-            ))}
-          </div>
 
-          <div className="mt-8">
-            <h2 className="text-sm font-medium text-muted">Description</h2>
-            <p className="mt-2 text-sm leading-relaxed text-foreground/90">
-              A high-quality {category?.name.toLowerCase()} asset, ready to drop into your next
-              GFX project. Checked and approved by the Assetary team.
-            </p>
-          </div>
+          {asset.description && (
+            <div className="mt-8">
+              <h2 className="text-sm font-medium text-muted">Description</h2>
+              <p className="mt-2 whitespace-pre-line text-sm leading-relaxed text-foreground/90">
+                {asset.description}
+              </p>
+            </div>
+          )}
         </div>
 
         <div>
@@ -53,16 +40,16 @@ export default async function AssetPage({ params }: { params: Promise<{ id: stri
             {category?.emoji} {category?.name}
           </p>
           <h1 className="mt-2 text-2xl font-semibold">{asset.title}</h1>
-          <p className="mt-1 text-sm text-muted">by {asset.creator}</p>
+          <p className="mt-1 text-sm text-muted">by {asset.creatorName}</p>
 
           <div className="mt-6 flex items-center gap-4 text-sm text-muted">
             <span className="flex items-center gap-1.5">
               <Download className="h-4 w-4" strokeWidth={1.75} />
-              {asset.downloads.toLocaleString()} downloads
+              {asset.downloadCount.toLocaleString()} downloads
             </span>
             <span className="flex items-center gap-1.5">
               <Heart className="h-4 w-4" strokeWidth={1.75} />
-              {asset.likes.toLocaleString()} likes
+              {asset.likeCount.toLocaleString()} likes
             </span>
           </div>
 

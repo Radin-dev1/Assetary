@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { categories } from "@/lib/categories";
 import { AssetCard } from "@/components/asset-card";
-import type { Asset } from "@/lib/types";
+import { EmptyCatalog } from "@/components/empty-catalog";
+import type { CatalogAsset } from "@/lib/queries";
 
 export function BrowseGrid({
   title,
@@ -9,7 +10,7 @@ export function BrowseGrid({
   activeSlug,
 }: {
   title: string;
-  assets: Asset[];
+  assets: CatalogAsset[];
   activeSlug?: string;
 }) {
   return (
@@ -48,13 +49,12 @@ export function BrowseGrid({
           <p className="text-sm text-muted">{assets.length} assets</p>
         </div>
         <div className="mt-5 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
-          {assets.map((asset) => (
-            <AssetCard key={asset.id} asset={asset} />
-          ))}
+          {assets.length > 0 ? (
+            assets.map((asset) => <AssetCard key={asset.id} asset={asset} />)
+          ) : (
+            <EmptyCatalog />
+          )}
         </div>
-        {assets.length === 0 && (
-          <p className="mt-10 text-center text-sm text-muted">No assets found.</p>
-        )}
       </div>
     </div>
   );

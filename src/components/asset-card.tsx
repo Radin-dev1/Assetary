@@ -1,15 +1,16 @@
 import Link from "next/link";
 import Image from "next/image";
 import { Download, Heart } from "lucide-react";
-import type { Asset } from "@/lib/types";
+import type { CatalogAsset } from "@/lib/queries";
 import { getCategory } from "@/lib/categories";
 
 function initials(name: string) {
   return name.slice(0, 2).toUpperCase();
 }
 
-export function AssetCard({ asset }: { asset: Asset }) {
+export function AssetCard({ asset }: { asset: CatalogAsset }) {
   const category = getCategory(asset.categorySlug);
+  const image = asset.thumbnailUrl ?? category?.image;
 
   return (
     <Link
@@ -17,10 +18,10 @@ export function AssetCard({ asset }: { asset: Asset }) {
       className="group flex flex-col overflow-hidden rounded-xl border border-border bg-surface transition-colors hover:border-foreground/30"
     >
       <div className="relative aspect-square overflow-hidden bg-surface-2">
-        {category && (
+        {image && (
           <Image
-            src={category.image}
-            alt={category.name}
+            src={image}
+            alt={category?.name ?? asset.title}
             fill
             sizes="(min-width: 1024px) 20vw, 50vw"
             className="object-cover transition-transform duration-300 group-hover:scale-105"
@@ -43,18 +44,18 @@ export function AssetCard({ asset }: { asset: Asset }) {
         <p className="line-clamp-1 text-sm font-medium">{asset.title}</p>
         <div className="flex items-center gap-1.5 text-xs text-muted">
           <span className="flex h-4 w-4 items-center justify-center rounded-full bg-surface-2 text-[9px] font-medium text-foreground">
-            {initials(asset.creator)}
+            {initials(asset.creatorName)}
           </span>
-          {asset.creator}
+          {asset.creatorName}
         </div>
         <div className="mt-auto flex items-center gap-3 pt-1 text-xs text-muted">
           <span className="flex items-center gap-1">
             <Download className="h-3.5 w-3.5" strokeWidth={1.75} />
-            {asset.downloads.toLocaleString()}
+            {asset.downloadCount.toLocaleString()}
           </span>
           <span className="flex items-center gap-1">
             <Heart className="h-3.5 w-3.5" strokeWidth={1.75} />
-            {asset.likes.toLocaleString()}
+            {asset.likeCount.toLocaleString()}
           </span>
         </div>
       </div>

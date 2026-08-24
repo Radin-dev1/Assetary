@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import { getCategory, categories } from "@/lib/categories";
-import { getAssetsByCategory } from "@/lib/mock-assets";
+import { getApprovedAssets } from "@/lib/queries";
 import { BrowseGrid } from "@/components/browse-grid";
 
 export function generateStaticParams() {
@@ -16,7 +16,7 @@ export default async function CategoryPage({
   const category = getCategory(slug);
   if (!category) notFound();
 
-  const assets = getAssetsByCategory(slug);
+  const assets = await getApprovedAssets({ categorySlug: slug });
 
   return (
     <BrowseGrid

@@ -4,6 +4,8 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import { isSupabaseConfigured } from "@/lib/supabase/env";
+import { SetupNotice } from "@/components/setup-notice";
 import { Logo } from "@/components/logo";
 
 const DiscordIcon = () => (
@@ -71,6 +73,8 @@ export function AuthForm({ mode }: { mode: "login" | "signup" }) {
       options: { redirectTo: `${window.location.origin}/auth/callback` },
     });
   }
+
+  if (!isSupabaseConfigured()) return <SetupNotice />;
 
   return (
     <div className="mx-auto flex w-full max-w-sm flex-1 flex-col justify-center px-4 py-16">
