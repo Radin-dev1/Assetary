@@ -8,11 +8,11 @@ export function LogoMark({ className = "", size = 28 }: { className?: string; si
   );
 }
 
-export function Logo({ className = "", markSize = 28 }: { className?: string; markSize?: number }) {
+export function Logo({ className = "", markSize = 38 }: { className?: string; markSize?: number }) {
   return (
     <span className={`inline-flex items-center gap-2.5 ${className}`}>
       <LogoMark size={markSize} />
-      <span className="text-lg font-semibold tracking-tight lowercase">assetary</span>
+      <span className="text-xl font-semibold tracking-tight lowercase">assetary</span>
     </span>
   );
 }
