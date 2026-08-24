@@ -10,7 +10,7 @@ export function Footer() {
           <div>
             <p className="text-sm font-medium">assetary</p>
             <p className="mt-1 max-w-xs text-sm text-muted">
-              Free and paid GFX assets for Roblox creators — rigs, HDRIs, poses, textures, and more.
+              Free and paid GFX assets for Roblox creators — HDRIs, 2D and 3D assets, materials, and more.
             </p>
           </div>
         </div>

@@ -33,7 +33,7 @@ export function Header() {
           <input
             name="q"
             type="text"
-            placeholder="Search rigs, HDRIs, poses..."
+            placeholder="Search HDRIs, 3D assets, templates..."
             className="w-full rounded-full border border-border bg-surface py-2 pl-9 pr-4 text-sm outline-none placeholder:text-muted focus:border-foreground/40"
           />
         </form>

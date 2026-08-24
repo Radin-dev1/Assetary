@@ -6,9 +6,9 @@ export default function AboutPage() {
       <LogoMark size={40} />
       <h1 className="mt-6 text-2xl font-semibold">About Assetary</h1>
       <p className="mt-4 text-sm leading-relaxed text-muted">
-        Assetary is a marketplace built for Roblox GFX creators — a place to find and share rigs,
-        HDRIs, poses, textures, materials, props, templates, and full scenes. Anyone can upload;
-        every asset is checked before it goes live.
+        Assetary is a marketplace built for Roblox GFX creators — a place to find and share HDRIs,
+        2D assets, 3D assets, materials, templates, and full scenes. Anyone can upload; every
+        asset is checked before it goes live.
       </p>
       <p className="mt-4 text-sm leading-relaxed text-muted">
         Right now Assetary is in its free-only launch phase — every asset on the site is free to

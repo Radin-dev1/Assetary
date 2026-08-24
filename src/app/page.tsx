@@ -60,7 +60,7 @@ export default async function Home() {
             Assets that make your renders hit different.
           </h1>
           <p className="mt-4 max-w-xl text-base text-muted sm:text-lg">
-            Rigs, HDRIs, poses, textures, and more — free and paid, uploaded by creators, checked
+            HDRIs, 2D and 3D assets, materials, and more — free and paid, uploaded by creators, checked
             before they ship.
           </p>
           <div className="mt-8 flex flex-wrap items-center gap-3">

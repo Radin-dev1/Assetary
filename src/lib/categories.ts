@@ -7,14 +7,12 @@ export type Category = {
 };
 
 export const categories: Category[] = [
-  { slug: "rigs", name: "Rigs", emoji: "🦴", description: "Character rigs ready to pose", image: "/images/categories/rigs.webp" },
   { slug: "hdris", name: "HDRIs", emoji: "🌅", description: "Environment lighting maps", image: "/images/categories/hdris.webp" },
-  { slug: "poses", name: "Poses", emoji: "🧍", description: "Pose libraries and pose packs", image: "/images/categories/poses.webp" },
-  { slug: "textures", name: "Textures", emoji: "🧱", description: "Surface and material textures", image: "/images/categories/textures.webp" },
-  { slug: "materials", name: "Materials", emoji: "🎨", description: "Ready-made material setups", image: "/images/categories/materials.webp" },
-  { slug: "props", name: "Props", emoji: "📦", description: "3D props and set dressing", image: "/images/categories/props.webp" },
-  { slug: "templates", name: "Templates", emoji: "🖼️", description: "PSD and thumbnail templates", image: "/images/categories/templates.webp" },
+  { slug: "2d-assets", name: "2D Assets", emoji: "🖌️", description: "Flat art, sprites, and UI graphics", image: "/images/categories/2d-assets.webp" },
+  { slug: "3d-assets", name: "3D Assets", emoji: "🧊", description: "Models, props, and 3D set dressing", image: "/images/categories/3d-assets.webp" },
+  { slug: "materials", name: "Material", emoji: "🎨", description: "Ready-made material setups", image: "/images/categories/materials.webp" },
   { slug: "scenes", name: "Scenes", emoji: "🏙️", description: "Full scene and environment files", image: "/images/categories/scenes.webp" },
+  { slug: "templates", name: "Templates", emoji: "🖼️", description: "PSD and thumbnail templates", image: "/images/categories/templates.webp" },
 ];
 
 export function getCategory(slug: string) {

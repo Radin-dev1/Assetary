@@ -12,7 +12,7 @@ const inter = Inter({
 export const metadata: Metadata = {
   title: "Assetary — GFX assets for Roblox creators",
   description:
-    "Free and paid Roblox GFX assets: rigs, HDRIs, poses, textures, materials, props, templates, and scenes.",
+    "Free and paid Roblox GFX assets: HDRIs, 2D assets, 3D assets, materials, scenes, and templates.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
