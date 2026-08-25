@@ -8,12 +8,6 @@ import { isSupabaseConfigured } from "@/lib/supabase/env";
 import { SetupNotice } from "@/components/setup-notice";
 import { Logo } from "@/components/logo";
 
-const DiscordIcon = () => (
-  <svg viewBox="0 0 24 24" className="h-4 w-4" fill="currentColor">
-    <path d="M20.32 4.37a19.8 19.8 0 0 0-4.9-1.52.07.07 0 0 0-.08.04c-.21.38-.45.87-.61 1.26a18.3 18.3 0 0 0-5.46 0 12.6 12.6 0 0 0-.62-1.26.08.08 0 0 0-.08-.04c-1.7.29-3.36.8-4.9 1.52a.07.07 0 0 0-.03.03C.53 8.09-.32 11.7.1 15.25a.08.08 0 0 0 .03.06 19.9 19.9 0 0 0 6 3.03.08.08 0 0 0 .08-.03c.46-.63.87-1.3 1.23-2a.08.08 0 0 0-.04-.11 13 13 0 0 1-1.87-.9.08.08 0 0 1 0-.13c.13-.09.25-.19.37-.28a.07.07 0 0 1 .08 0c3.93 1.8 8.18 1.8 12.06 0a.07.07 0 0 1 .08 0c.12.1.24.19.37.28a.08.08 0 0 1 0 .13 12.2 12.2 0 0 1-1.87.9.08.08 0 0 0-.04.11c.36.7.78 1.37 1.23 2a.08.08 0 0 0 .08.03 19.8 19.8 0 0 0 6.01-3.03.08.08 0 0 0 .03-.06c.5-4.12-.63-7.7-2.66-10.85a.06.06 0 0 0-.03-.03ZM8.02 13.5c-1.18 0-2.15-1.08-2.15-2.42 0-1.33.95-2.42 2.15-2.42 1.21 0 2.17 1.1 2.15 2.42 0 1.34-.95 2.42-2.15 2.42Zm7.97 0c-1.18 0-2.15-1.08-2.15-2.42 0-1.33.95-2.42 2.15-2.42 1.21 0 2.17 1.1 2.15 2.42 0 1.34-.94 2.42-2.15 2.42Z" />
-  </svg>
-);
-
 const GoogleIcon = () => (
   <svg viewBox="0 0 24 24" className="h-4 w-4">
     <path
@@ -66,7 +60,7 @@ export function AuthForm({ mode }: { mode: "login" | "signup" }) {
     setLoading(false);
   }
 
-  async function handleOAuth(provider: "discord" | "google") {
+  async function handleOAuth(provider: "google") {
     const supabase = createClient();
     await supabase.auth.signInWithOAuth({
       provider,
@@ -89,13 +83,6 @@ export function AuthForm({ mode }: { mode: "login" | "signup" }) {
       </p>
 
       <div className="mt-6 flex flex-col gap-2">
-        <button
-          onClick={() => handleOAuth("discord")}
-          className="flex items-center justify-center gap-2 rounded-full border border-border py-2.5 text-sm font-medium transition-colors hover:border-foreground/40"
-        >
-          <DiscordIcon />
-          Continue with Discord
-        </button>
         <button
           onClick={() => handleOAuth("google")}
           className="flex items-center justify-center gap-2 rounded-full border border-border py-2.5 text-sm font-medium transition-colors hover:border-foreground/40"
