@@ -19,6 +19,7 @@ export default function ModQueuePage() {
   const router = useRouter();
   const [allowed, setAllowed] = useState(false);
   const [pending, setPending] = useState<PendingAsset[] | null>(null);
+  const [deciding, setDeciding] = useState<string | null>(null);
 
   useEffect(() => {
     if (!isSupabaseConfigured()) return;
@@ -53,6 +54,15 @@ export default function ModQueuePage() {
     });
   }, [router]);
 
+  async function handleDecision(assetId: string, status: "approved" | "rejected") {
+    setDeciding(assetId);
+    const supabase = createClient();
+    const { error } = await supabase.from("assets").update({ status }).eq("id", assetId);
+
+    if (!error) setPending((prev) => prev?.filter((a) => a.id !== assetId) ?? null);
+    setDeciding(null);
+  }
+
   if (!isSupabaseConfigured()) return <SetupNotice />;
   if (!allowed) {
     return (
@@ -78,10 +88,18 @@ export default function ModQueuePage() {
                 <p className="text-xs text-muted">{a.category_slug}</p>
               </div>
               <div className="flex gap-2">
-                <button className="rounded-full border border-border px-3 py-1 text-xs transition-colors hover:border-foreground/40">
+                <button
+                  onClick={() => handleDecision(a.id, "rejected")}
+                  disabled={deciding === a.id}
+                  className="rounded-full border border-border px-3 py-1 text-xs transition-colors hover:border-foreground/40 disabled:opacity-50"
+                >
                   Reject
                 </button>
-                <button className="rounded-full bg-foreground px-3 py-1 text-xs font-medium text-background transition-opacity hover:opacity-85">
+                <button
+                  onClick={() => handleDecision(a.id, "approved")}
+                  disabled={deciding === a.id}
+                  className="rounded-full bg-foreground px-3 py-1 text-xs font-medium text-background transition-opacity hover:opacity-85 disabled:opacity-50"
+                >
                   Approve
                 </button>
               </div>
