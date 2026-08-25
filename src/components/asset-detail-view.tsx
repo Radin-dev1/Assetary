@@ -7,6 +7,7 @@ import { Download, Heart, Flag, ShieldCheck } from "lucide-react";
 import { getAssetById, getApprovedAssets, type CatalogAsset } from "@/lib/queries";
 import { getCategory } from "@/lib/categories";
 import { AssetCard } from "@/components/asset-card";
+import { CommentSection } from "@/components/comment-section";
 
 export function AssetDetailView({ id }: { id: string }) {
   const [asset, setAsset] = useState<CatalogAsset | null | undefined>(undefined);
@@ -120,6 +121,8 @@ export function AssetDetailView({ id }: { id: string }) {
           </div>
         </div>
       )}
+
+      <CommentSection assetId={id} />
     </div>
   );
 }

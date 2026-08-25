@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { Trash2 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { isSupabaseConfigured } from "@/lib/supabase/env";
 import { SetupNotice } from "@/components/setup-notice";
@@ -12,6 +13,8 @@ type OwnAsset = {
   category_slug: string;
   status: string;
   created_at: string;
+  file_path: string;
+  thumbnail_path: string | null;
 };
 
 export default function DashboardPage() {
@@ -32,13 +35,28 @@ export default function DashboardPage() {
 
       const { data } = await supabase
         .from("assets")
-        .select("id, title, category_slug, status, created_at")
+        .select("id, title, category_slug, status, created_at, file_path, thumbnail_path")
         .eq("creator_id", user.id)
         .order("created_at", { ascending: false });
 
       setAssets(data ?? []);
     });
   }, [router]);
+
+  async function handleDelete(asset: OwnAsset) {
+    if (!confirm(`Delete "${asset.title}"? This can't be undone.`)) return;
+
+    const supabase = createClient();
+    await Promise.all([
+      supabase.storage.from("assets").remove([asset.file_path]),
+      asset.thumbnail_path
+        ? supabase.storage.from("thumbnails").remove([asset.thumbnail_path])
+        : Promise.resolve(),
+    ]);
+
+    const { error } = await supabase.from("assets").delete().eq("id", asset.id);
+    if (!error) setAssets((prev) => prev?.filter((a) => a.id !== asset.id) ?? null);
+  }
 
   if (!isSupabaseConfigured()) return <SetupNotice />;
   if (!email) {
@@ -60,17 +78,26 @@ export default function DashboardPage() {
           assets.map((a) => (
             <div key={a.id} className="flex items-center justify-between px-4 py-3 text-sm">
               <span>{a.title}</span>
-              <span
-                className={
-                  a.status === "approved"
-                    ? "text-emerald-400"
-                    : a.status === "rejected"
-                    ? "text-red-400"
-                    : "text-yellow-400"
-                }
-              >
-                {a.status}
-              </span>
+              <div className="flex items-center gap-3">
+                <span
+                  className={
+                    a.status === "approved"
+                      ? "text-emerald-400"
+                      : a.status === "rejected"
+                      ? "text-red-400"
+                      : "text-yellow-400"
+                  }
+                >
+                  {a.status}
+                </span>
+                <button
+                  onClick={() => handleDelete(a)}
+                  className="text-muted transition-colors hover:text-red-400"
+                  aria-label="Delete asset"
+                >
+                  <Trash2 className="h-4 w-4" strokeWidth={1.75} />
+                </button>
+              </div>
             </div>
           ))
         ) : (

@@ -100,3 +100,41 @@ export async function getCatalogStats() {
 
   return { assetCount: count ?? 0, totalDownloads };
 }
+
+export type AssetComment = {
+  id: string;
+  body: string;
+  createdAt: string;
+  authorId: string;
+  authorName: string;
+};
+
+export async function getComments(assetId: string): Promise<AssetComment[]> {
+  if (!isSupabaseConfigured()) return [];
+
+  const supabase = createClient();
+  const { data, error } = await supabase
+    .from("comments")
+    .select("id, body, created_at, user_id, author:profiles!comments_user_id_fkey(username)")
+    .eq("asset_id", assetId)
+    .order("created_at", { ascending: false })
+    .returns<
+      {
+        id: string;
+        body: string;
+        created_at: string;
+        user_id: string;
+        author: { username: string | null } | null;
+      }[]
+    >();
+
+  if (error || !data) return [];
+
+  return data.map((row) => ({
+    id: row.id,
+    body: row.body,
+    createdAt: row.created_at,
+    authorId: row.user_id,
+    authorName: row.author?.username || "creator",
+  }));
+}
