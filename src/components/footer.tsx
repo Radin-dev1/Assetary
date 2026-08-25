@@ -33,6 +33,12 @@ export function Footer() {
             <Link href="/rules" className="hover:text-muted/80">
               Rules
             </Link>
+            <Link href="/privacy" className="hover:text-muted/80">
+              Privacy
+            </Link>
+            <Link href="/terms" className="hover:text-muted/80">
+              Terms
+            </Link>
           </div>
           <div className="flex flex-col gap-2">
             <p className="text-muted">Account</p>

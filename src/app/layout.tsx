@@ -9,10 +9,28 @@ const inter = Inter({
   subsets: ["latin"],
 });
 
+const title = "Assetary — GFX assets for Roblox creators";
+const description =
+  "Free and paid Roblox GFX assets: HDRIs, 2D assets, 3D assets, materials, scenes, and templates.";
+
 export const metadata: Metadata = {
-  title: "Assetary — GFX assets for Roblox creators",
-  description:
-    "Free and paid Roblox GFX assets: HDRIs, 2D assets, 3D assets, materials, scenes, and templates.",
+  metadataBase: new URL("https://assetary.net"),
+  title,
+  description,
+  openGraph: {
+    title,
+    description,
+    url: "https://assetary.net",
+    siteName: "Assetary",
+    images: [{ url: "/images/hero.webp", width: 2048, height: 1152 }],
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title,
+    description,
+    images: ["/images/hero.webp"],
+  },
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

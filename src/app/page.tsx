@@ -37,12 +37,18 @@ export default function Home() {
     getCatalogStats().then(setCatalogStats);
   }, []);
 
-  const stats = [
-    { label: "Assets live", value: `${catalogStats.assetCount}` },
-    { label: "Total downloads", value: `${catalogStats.totalDownloads}` },
-    { label: "Categories", value: `${categories.length}` },
-    { label: "Cost to browse", value: "Free" },
-  ];
+  const isLaunching = catalogStats.assetCount === 0;
+  const stats = isLaunching
+    ? [
+        { label: "Categories", value: `${categories.length}` },
+        { label: "Cost to browse", value: "Free" },
+      ]
+    : [
+        { label: "Assets live", value: `${catalogStats.assetCount}` },
+        { label: "Total downloads", value: `${catalogStats.totalDownloads}` },
+        { label: "Categories", value: `${categories.length}` },
+        { label: "Cost to browse", value: "Free" },
+      ];
 
   return (
     <div className="flex flex-1 flex-col">
@@ -61,7 +67,14 @@ export default function Home() {
         </div>
 
         <div className="relative mx-auto max-w-7xl px-4 py-20 sm:px-6 sm:py-28">
-          <p className="text-sm font-medium text-muted">Built for Roblox GFX creators</p>
+          <div className="flex items-center gap-2">
+            {isLaunching && (
+              <span className="rounded-full bg-foreground px-2.5 py-0.5 text-xs font-medium text-background">
+                Just launched
+              </span>
+            )}
+            <p className="text-sm font-medium text-muted">Built for Roblox GFX creators</p>
+          </div>
           <h1 className="mt-3 max-w-2xl text-4xl font-semibold tracking-tight sm:text-5xl">
             Assets that make your renders hit different.
           </h1>
@@ -85,7 +98,9 @@ export default function Home() {
             </Link>
           </div>
 
-          <div className="mt-14 grid grid-cols-2 gap-6 border-t border-border/60 pt-8 sm:grid-cols-4">
+          <div
+            className={`mt-14 grid grid-cols-2 gap-6 border-t border-border/60 pt-8 ${isLaunching ? "max-w-xs" : "sm:grid-cols-4"}`}
+          >
             {stats.map((stat) => (
               <div key={stat.label}>
                 <p className="text-2xl font-semibold sm:text-3xl">{stat.value}</p>
