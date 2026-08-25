@@ -1,12 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { UploadCloud } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { isSupabaseConfigured } from "@/lib/supabase/env";
 import { SetupNotice } from "@/components/setup-notice";
 import { categories } from "@/lib/categories";
+import { moderateThumbnail, preloadModerationModel } from "@/lib/moderation";
 
 export default function UploadPage() {
   const [title, setTitle] = useState("");
@@ -15,8 +16,14 @@ export default function UploadPage() {
   const [file, setFile] = useState<File | null>(null);
   const [thumbnail, setThumbnail] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
+  const [status, setStatus] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
+
+  // Warm the checker up front so submitting doesn't wait on the model download.
+  useEffect(() => {
+    preloadModerationModel();
+  }, []);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -40,6 +47,17 @@ export default function UploadPage() {
       return;
     }
 
+    setStatus("Checking your thumbnail...");
+    const mod = await moderateThumbnail(thumbnail);
+
+    if (mod.verdict === "rejected") {
+      setError(mod.reason);
+      setStatus(null);
+      setLoading(false);
+      return;
+    }
+
+    setStatus("Uploading...");
     const assetPath = `${user.id}/${Date.now()}-${file.name}`;
     const thumbPath = `${user.id}/${Date.now()}-${thumbnail.name}`;
 
@@ -50,6 +68,7 @@ export default function UploadPage() {
 
     if (assetUpload.error || thumbUpload.error) {
       setError(assetUpload.error?.message || thumbUpload.error?.message || "Upload failed.");
+      setStatus(null);
       setLoading(false);
       return;
     }
@@ -62,11 +81,13 @@ export default function UploadPage() {
       file_path: assetPath,
       thumbnail_path: thumbPath,
       price: 0,
-      status: "pending",
+      status: mod.verdict,
+      ai_mod_result: { verdict: mod.verdict, reason: mod.reason, scores: mod.scores },
     });
 
     if (insertError) {
       setError(insertError.message);
+      setStatus(null);
       setLoading(false);
       return;
     }
@@ -140,13 +161,14 @@ export default function UploadPage() {
         </select>
 
         {error && <p className="text-sm text-red-400">{error}</p>}
+        {status && <p className="text-sm text-muted">{status}</p>}
 
         <button
           type="submit"
           disabled={loading}
           className="mt-2 rounded-full bg-foreground py-2.5 text-sm font-medium text-background transition-opacity hover:opacity-85 disabled:opacity-50"
         >
-          {loading ? "Uploading..." : "Submit for review"}
+          {loading ? "Working..." : "Submit"}
         </button>
       </form>
     </div>
