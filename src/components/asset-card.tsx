@@ -14,7 +14,7 @@ export function AssetCard({ asset }: { asset: CatalogAsset }) {
 
   return (
     <Link
-      href={`/asset?id=${asset.id}`}
+      href={`/asset/${asset.id}`}
       className="group flex flex-col overflow-hidden rounded-xl border border-border bg-surface transition-colors hover:border-foreground/30"
     >
       <div className="relative aspect-square overflow-hidden bg-surface-2">
